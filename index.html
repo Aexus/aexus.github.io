@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>网站眼中的你 (Who Are You) - HTML5 纯前端版</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #161920;
+      --card-hover: #1c2029;
+      --border: #262b36;
+      --text: #e6e8ee;
+      --muted: #8b93a6;
+      --accent: #60a5fa;
+      --accent-bg: rgba(96, 165, 250, 0.14);
+      --ok: #34d399;
+      --ok-bg: rgba(52, 211, 153, 0.12);
+      --warn: #fbbf24;
+      --warn-bg: rgba(251, 191, 36, 0.14);
+      --bad: #f87171;
+      --bad-bg: rgba(248, 113, 113, 0.14);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f7f8fa;
+        --card: #ffffff;
+        --card-hover: #f1f4f9;
+        --border: #e2e6ef;
+        --text: #1a1d24;
+        --muted: #646d82;
+        --accent: #2563eb;
+        --accent-bg: rgba(37, 99, 235, 0.1);
+        --ok: #059669;
+        --ok-bg: rgba(5, 150, 105, 0.1);
+        --warn: #d97706;
+        --warn-bg: rgba(217, 119, 6, 0.1);
+        --bad: #dc2626;
+        --bad-bg: rgba(220, 38, 38, 0.1);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.65;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-group h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .title-group p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    button {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+      background: var(--card-hover);
+    }
+
+    button.active {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    section {
+      margin-bottom: 2.25rem;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* 用户画像段落 */
+    .portrait-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      font-size: 1.12rem;
+      line-height: 2;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .blank {
+      display: inline-block;
+      padding: 0.05rem 0.45rem;
+      margin: 0 0.15rem;
+      border-radius: 6px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.96em;
+      font-weight: 600;
+      border-bottom: 2px solid var(--accent);
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .blank:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.1);
+    }
+
+    .blank.empty-age {
+      background: var(--warn-bg);
+      color: var(--warn);
+      border-bottom-color: var(--warn);
+    }
+
+    .portrait-hint {
+      margin-top: 0.85rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* 指纹身份卡 */
+    .id-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+
+    .id-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .id-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .id-value {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    /* 伪装检测列表 */
+    .checks-grid {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .check-row {
+      padding: 0.95rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .check-row:last-child {
+      border-bottom: none;
+    }
+
+    .check-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .check-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+
+    .badge.ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .badge.warn {
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+
+    .badge.bad {
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .check-detail {
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .check-fix {
+      font-size: 0.83rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--warn);
+      padding: 0.45rem 0.75rem;
+      color: var(--text);
+      border-radius: 0 6px 6px 0;
+      display: none;
+    }
+
+    .check-row.flagged .check-fix {
+      display: block;
+    }
+
+    /* 嗅探器分组表格 */
+    .group-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+
+    .group-header {
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .sniffer-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .sniffer-table tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s ease;
+    }
+
+    .sniffer-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .sniffer-table tr.highlight {
+      background: var(--accent-bg) !important;
+    }
+
+    .sniffer-table td {
+      padding: 0.65rem 1.25rem;
+      vertical-align: top;
+    }
+
+    .sniffer-name {
+      width: 28%;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .sniffer-value {
+      width: 44%;
+      font-family: var(--mono);
+      word-break: break-word;
+    }
+
+    .sniffer-how {
+      width: 28%;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* 截图打码模糊 */
+    body.blur-sensitive .sensitive {
+      filter: blur(6px);
+      user-select: none;
+    }
+
+    @media (max-width: 680px) {
+      .sniffer-table, .sniffer-table tbody, .sniffer-table tr, .sniffer-table td {
+        display: block;
+        width: 100%;
+      }
+      .sniffer-table tr {
+        padding: 0.5rem 0;
+      }
+      .sniffer-table td {
+        padding: 0.25rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="title-group">
+        <h1>网站眼中的你 (Who Are You)</h1>
+        <p>无需任何权限弹窗，打开网页的瞬间即可读取的浏览器嗅探画像与伪装检测</p>
+      </div>
+      <div class="toolbar">
+        <button id="btn-blur" type="button">隐私打码 (截图模式)</button>
+        <button id="btn-rerun" type="button">重新嗅探</button>
+      </div>
+    </header>
+
+    <!-- 1. 用户画像段落 -->
+    <section>
+      <h2>
+        <span>一、生成的访客画像 (The Portrait)</span>
+        <span class="section-sub">悬停填空项可高亮下方数据来源</span>
+      </h2>
+      <div class="portrait-card">
+        在你打开本页的瞬间，无需点击任何“允许”，网站就已经知道：你大概率是
+        <span class="blank" data-target="row-lang,row-tz,row-ip-country" id="p-nation">检测中...</span> 人，
+        目前身处 <span class="blank sensitive" data-target="row-ip-city,row-ip-coord" id="p-city">检测中...</span>，
+        日常使用 <span class="blank" data-target="row-lang,row-locale" id="p-lang">检测中...</span> 语言，
+        系统时区设为 <span class="blank" data-target="row-tz,row-clock" id="p-tz">检测中...</span>。
+        你正在使用一台搭载 <span class="blank" data-target="row-os,row-arch" id="p-os">检测中...</span> 的设备，
+        通过 <span class="blank" data-target="row-browser,row-ua" id="p-browser">检测中...</span> 浏览器访问，
+        屏幕分辨率为 <span class="blank" data-target="row-screen,row-fps" id="p-screen">检测中...</span>，
+        显卡渲染器为 <span class="blank" data-target="row-gpu" id="p-gpu">检测中...</span>。
+        你的网络出口位于 <span class="blank sensitive" data-target="row-ip,row-asn" id="p-net">检测中...</span>，
+        偏好 <span class="blank" data-target="row-scheme,row-gamut" id="p-pref">检测中...</span> 界面风格；
+        根据你电脑上安装的字体，你平时很可能从事或接触 <span class="blank" data-target="row-fonts" id="p-work">检测中...</span> 相关工作。
+        你的浏览器综合指纹为 <span class="blank" data-target="row-fp-combined,row-fp-canvas" id="p-fp">计算中...</span>。
+        唯一留空的只有你的年龄：<span class="blank empty-age" title="没有任何浏览器 API 能直接读取真实年龄，因此诚实留空而不盲猜">未知（浏览器无法直接读取年龄）</span>。
+        <div class="portrait-hint">
+          <span>提示：把鼠标悬停在上方任意高亮词条上，下方对应的嗅探器行将同步发光。</span>
+          <span id="scan-timer">耗时计算中...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 指纹身份卡 -->
+    <section>
+      <h2>
+        <span>二、无 Cookie 跨会话追踪卡 (Fingerprint ID Card)</span>
+        <span class="section-sub">仅保存在你的本地浏览器中</span>
+      </h2>
+      <div class="id-card">
+        <div class="id-item">
+          <span class="id-label">当前综合硬件/画布指纹</span>
+          <span class="id-value" id="id-current-fp">计算中...</span>
+        </div>
+        <div class="id-item">
+          <span class="id-label">上次访问本页时间</span>
+          <span class="id-value" id="id-last-visit">首次访问</span>
+        </div>
+        <div class="id-item">
+          <span class="id-label">历史累计访问次数</span>
+          <span class="id-value" id="id-visit-count">1 次</span>
+        </div>
+        <div class="id-item">
+          <span class="id-label">跨会话指纹比对状态</span>
+          <span class="id-value" id="id-fp-match">等待比对...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 九项伪装与泄露检测 -->
+    <section>
+      <h2>
+        <span>三、伪装与代理破绽检测 (The Disguise Check)</span>
+        <span class="section-sub">网站如何识破 VPN、代理或指纹伪装</span>
+      </h2>
+      <div class="checks-grid" id="checks-container"></div>
+    </section>
+
+    <!-- 4. 全量嗅探器分组列表 -->
+    <section>
+      <h2>
+        <span>四、全量嗅探器读取明细 (Every Sniffer, Grouped)</span>
+        <span class="section-sub">实时展示每个浏览器接口返回的原始数据与读取方式</span>
+      </h2>
+      <div id="sniffers-container"></div>
+    </section>
+  </div>
+
+  <script>
+    // 嗅探器定义表（提前渲染骨架，防止页面跳动）
+    const SNIFFER_GROUPS = [
+      {
+        title: "1. 网络与服务端可见信息 (What the Server & Network See)",
+        rows: [
+          { id: "row-ip", name: "公网出口 IP", how: "GET api.ip.sb / ipapi.co", sensitive: true },
+          { id: "row-ip-city", name: "IP 地理位置 (城市/地区)", how: "GeoIP Lookup", sensitive: true },
+          { id: "row-ip-country", name: "IP 所属国家/代码", how: "GeoIP Country" },
+          { id: "row-ip-coord", name: "经纬度坐标", how: "GeoIP Latitude / Longitude", sensitive: true },
+          { id: "row-asn", name: "自治系统号与运营商 (ASN / ISP)", how: "GeoIP ASN / Org", sensitive: true },
+          { id: "row-ip-tz", name: "IP 所在地时区", how: "GeoIP Timezone" },
+          { id: "row-dns", name: "DNS 递归解析器 (EDNS)", how: "edns.ip-api.com/json", sensitive: true },
+          { id: "row-webrtc", name: "WebRTC STUN 暴露地址", how: "RTCPeerConnection (STUN)", sensitive: true },
+          { id: "row-proto", name: "页面协议与连接耗时", how: "performance.getEntriesByType('navigation')" }
+        ]
+      },
+      {
+        title: "2. 多路分流出口探测 (Exits)",
+        rows: [
+          { id: "row-exit-v4", name: "IPv4 出口地址", how: "api4.ipify.org", sensitive: true },
+          { id: "row-exit-v6", name: "IPv6 出口地址", how: "api6.ipify.org", sensitive: true },
+          { id: "row-exit-cf", name: "Cloudflare 边缘节点 Trace", how: "cloudflare.com/cdn-cgi/trace", sensitive: true }
+        ]
+      },
+      {
+        title: "3. 请求头与客户端提示 (Request Headers & Client Hints)",
+        rows: [
+          { id: "row-ua", name: "User-Agent 字符串", how: "navigator.userAgent" },
+          { id: "row-ch-ua", name: "Sec-CH-UA 品牌列表", how: "navigator.userAgentData.brands" },
+          { id: "row-ch-plat", name: "Client Hints 平台与版本", how: "userAgentData.getHighEntropyValues()" },
+          { id: "row-dnt", name: "请勿追踪与全局隐私控制 (DNT / GPC)", how: "navigator.doNotTrack / globalPrivacyControl" },
+          { id: "row-ref", name: "来源页面 (Referrer)", how: "document.referrer" }
+        ]
+      },
+      {
+        title: "4. 语言与区域偏好 (Language & Region)",
+        rows: [
+          { id: "row-lang", name: "浏览器首选语言列表", how: "navigator.languages" },
+          { id: "row-locale", name: "Intl 默认区域与日历", how: "Intl.DateTimeFormat().resolvedOptions()" },
+          { id: "row-tz", name: "系统时区与 UTC 偏移", how: "Intl timeZone + Date.getTimezoneOffset()" },
+          { id: "row-clock", name: "12 / 24 小时制偏好", how: "Intl.DateTimeFormat hourCycle" },
+          { id: "row-numfmt", name: "数字与货币格式化样本", how: "(1234567.89).toLocaleString()" },
+          { id: "row-voices", name: "系统内置语音合成引擎 (TTS Voices)", how: "speechSynthesis.getVoices()" }
+        ]
+      },
+      {
+        title: "5. 设备与硬件规格 (Device & Hardware)",
+        rows: [
+          { id: "row-os", name: "操作系统推断", how: "UA + userAgentData + platform" },
+          { id: "row-browser", name: "浏览器内核与版本", how: "UA + Vendor + Brands" },
+          { id: "row-arch", name: "CPU 架构与位数", how: "getHighEntropyValues('architecture', 'bitness')" },
+          { id: "row-screen", name: "屏幕分辨率、可用区与像素比", how: "window.screen + devicePixelRatio" },
+          { id: "row-fps", name: "屏幕刷新率估算", how: "requestAnimationFrame 采样" },
+          { id: "row-multiscreen", name: "多显示器扩展检测", how: "window.screen.isExtended" },
+          { id: "row-gpu", name: "显卡型号 (WebGL Unmasked Renderer)", how: "WEBGL_debug_renderer_info" },
+          { id: "row-webgpu", name: "WebGPU 适配器架构", how: "navigator.gpu.requestAdapter()" },
+          { id: "row-cpu-mem", name: "CPU 逻辑核心数与设备内存", how: "hardwareConcurrency / deviceMemory" },
+          { id: "row-touch", name: "最大触控点数", how: "navigator.maxTouchPoints" },
+          { id: "row-battery", name: "电池电量与充电状态", how: "navigator.getBattery()" },
+          { id: "row-conn", name: "网络类型与下行带宽估算", how: "navigator.connection (Network Information API)" },
+          { id: "row-media-dev", name: "音视频外设数量 (无需授权)", how: "navigator.mediaDevices.enumerateDevices()" },
+          { id: "row-storage", name: "浏览器存储配额估算 (反推硬盘大小)", how: "navigator.storage.estimate()" }
+        ]
+      },
+      {
+        title: "6. 浏览器设置与扩展痕迹 (Browser Settings & Extensions)",
+        rows: [
+          { id: "row-scheme", name: "深色/浅色主题与对比度偏好", how: "matchMedia('(prefers-color-scheme)')" },
+          { id: "row-motion", name: "减弱动画效果偏好", how: "matchMedia('(prefers-reduced-motion)')" },
+          { id: "row-gamut", name: "色彩空间与 HDR 支持", how: "matchMedia('(color-gamut: p3) / (dynamic-range: high)')" },
+          { id: "row-cookie-pdf", name: "Cookie 与内置 PDF 查看器状态", how: "cookieEnabled / pdfViewerEnabled" },
+          { id: "row-webdriver", name: "自动化控制标志 (Webdriver)", how: "navigator.webdriver" },
+          { id: "row-ext", name: "常见扩展与注入痕迹探测", how: "window.ethereum / DOM 特征检测" },
+          { id: "row-history", name: "当前标签页历史步数", how: "window.history.length" },
+          { id: "row-fonts", name: "已安装特定字体探测 (职业特征推断)", how: "Canvas 字体宽度基线比对" }
+        ]
+      },
+      {
+        title: "7. 浏览器指纹与防追踪检测 (Fingerprints)",
+        rows: [
+          { id: "row-fp-canvas", name: "Canvas 2D 渲染指纹", how: "HTMLCanvasElement.toDataURL() SHA-256" },
+          { id: "row-fp-webgl", name: "WebGL 参数与扩展指纹", how: "WebGLRenderingContext 参数哈希" },
+          { id: "row-fp-audio", name: "AudioContext 音频振荡器指纹", how: "OfflineAudioContext 采样哈希" },
+          { id: "row-fp-random", name: "防指纹随机化噪音检测", how: "连续两次渲染结果一致性比对" },
+          { id: "row-fp-combined", name: "跨会话综合设备指纹", how: "SHA-256(Canvas + WebGL + Audio + Fonts + HW)" }
+        ]
+      }
+    ];
+
+    // 初始化表格骨架
+    function renderSkeleton() {
+      const container = document.getElementById("sniffers-container");
+      container.innerHTML = SNIFFER_GROUPS.map(group => `
+        <div class="group-card">
+          <div class="group-header">
+            <span>${group.title}</span>
+            <span>${group.rows.length} 项</span>
+          </div>
+          <table class="sniffer-table">
+            <tbody>
+              ${group.rows.map(r => `
+                <tr id="${r.id}">
+                  <td class="sniffer-name">${r.name}</td>
+                  <td class="sniffer-value ${r.sensitive ? 'sensitive' : ''}" id="val-${r.id}">读取中...</td>
+                  <td class="sniffer-how">${r.how}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `).join("");
+    }
+
+    function setRow(id, text) {
+      const el = document.getElementById("val-" + id);
+      if (el) el.textContent = text;
+    }
+
+    // SHA-256 辅助函数
+    async function sha256Short(str) {
+      const buf = new TextEncoder().encode(str);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", buf);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+    }
+
+    // 1. Canvas 指纹与随机化检测
+    async function getCanvasFingerprint() {
+      function drawOnce() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 240;
+        canvas.height = 60;
+        const ctx = canvas.getContext("2d");
+        ctx.textBaseline = "alphabetic";
+        ctx.fillStyle = "#f60";
+        ctx.fillRect(100, 1, 62, 20);
+        ctx.fillStyle = "#069";
+        ctx.font = "15px 'Arial'";
+        ctx.fillText("WhoAreYou-1ms.dog 🎯", 2, 18);
+        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+        ctx.font = "18px 'Georgia'";
+        ctx.fillText("BrowserFingerprint", 4, 45);
+        return canvas.toDataURL();
+      }
+      const d1 = drawOnce();
+      const d2 = drawOnce();
+      const randomized = d1 !== d2;
+      const hash = await sha256Short(d1);
+      return { hash, randomized };
+    }
+
+    // 2. WebGL GPU 与指纹
+    async function getWebGLInfo() {
+      try {
+        const canvas = document.createElement("canvas");
+        const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        if (!gl) return { vendor: "不支持", renderer: "不支持", hash: "none" };
+        const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+        const vendor = debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : gl.getParameter(gl.VENDOR);
+        const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+        const exts = (gl.getSupportedExtensions() || []).join(",");
+        const hash = await sha256Short(vendor + "|" + renderer + "|" + exts);
+        return { vendor, renderer, hash };
+      } catch {
+        return { vendor: "被拦截", renderer: "被拦截", hash: "blocked" };
+      }
+    }
+
+    // 3. AudioContext 指纹
+    async function getAudioFingerprint() {
+      try {
+        const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+        if (!OfflineCtx) return "不支持";
+        const ctx = new OfflineCtx(1, 44100, 44100);
+        const osc = ctx.createOscillator();
+        osc.type = "triangle";
+        osc.frequency.value = 10000;
+        const comp = ctx.createDynamicsCompressor();
+        osc.connect(comp);
+        comp.connect(ctx.destination);
+        osc.start(0);
+        const buffer = await ctx.startRendering();
+        const data = buffer.getChannelData(0).slice(4500, 5000);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) sum += Math.abs(data[i]);
+        return await sha256Short(sum.toFixed(12));
+      } catch {
+        return "被拦截或不支持";
+      }
+    }
+
+    // 4. 字体探测与职业推断
+    function detectFontsAndWork() {
+      const baseFonts = ["monospace", "sans-serif", "serif"];
+      const testString = "mmmmmmmmmmlliWW@#12345";
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const baseWidths = {};
+      baseFonts.forEach(bf => {
+        ctx.font = `72px ${bf}`;
+        baseWidths[bf] = ctx.measureText(testString).width;
+      });
+
+      const fontCatalog = [
+        { name: "JetBrains Mono", tag: "dev" },
+        { name: "Fira Code", tag: "dev" },
+        { name: "Cascadia Code", tag: "dev" },
+        { name: "Source Code Pro", tag: "dev" },
+        { name: "Consolas", tag: "dev" },
+        { name: "Monaco", tag: "dev" },
+        { name: "SF Pro Display", tag: "design" },
+        { name: "Helvetica Neue", tag: "design" },
+        { name: "Futura", tag: "design" },
+        { name: "DIN Alternate", tag: "design" },
+        { name: "PingFang SC", tag: "cn" },
+        { name: "HarmonyOS Sans SC", tag: "cn" },
+        { name: "Microsoft YaHei", tag: "cn" },
+        { name: "SimSun", tag: "cn" }
+      ];
+
+      const detected = [];
+      const tags = { dev: 0, design: 0, cn: 0 };
+
+      fontCatalog.forEach(f => {
+        const installed = baseFonts.some(bf => {
+          ctx.font = `72px '${f.name}', ${bf}`;
+          return ctx.measureText(testString).width !== baseWidths[bf];
+        });
+        if (installed) {
+          detected.push(f.name);
+          tags[f.tag]++;
+        }
+      });
+
+      let workGuess = "通用办公 / 日常上网";
+      if (tags.dev >= 2 && tags.design >= 2) {
+        workGuess = "全栈研发与产品设计（检测到编程等宽字体与设计字体）";
+      } else if (tags.dev >= 2) {
+        workGuess = "软件开发 / 程序员（安装了编程专用等宽字体）";
+      } else if (tags.design >= 2) {
+        workGuess = "视觉/UI 设计或创意工作（安装了多款排版设计字体）";
+      } else if (tags.dev === 1) {
+        workGuess = "技术支持 / 理工科背景";
+      }
+
+      return {
+        detectedList: detected.length ? detected.join(", ") : "仅检测到系统基础默认字体",
+        workGuess
+      };
+    }
+
+    // 5. 估算屏幕刷新率
+    function estimateRefreshRate() {
+      return new Promise(resolve => {
+        let frames = 0;
+        const start = performance.now();
+        function tick(now) {
+          frames++;
+          if (now - start < 350) {
+            requestAnimationFrame(tick);
+          } else {
+            const fps = Math.round((frames * 1000) / (now - start));
+            resolve(fps);
+          }
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    // 6. WebRTC STUN 探测
+    function detectWebRTC() {
+      return new Promise(resolve => {
+        const ips = new Set();
+        const RTCPeer = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+        if (!RTCPeer) return resolve([]);
+        try {
+          const pc = new RTCPeer({
+            iceServers: [
+              { urls: "stun:stun.l.google.com:19302" },
+              { urls: "stun:stun.cloudflare.com:3478" }
+            ]
+          });
+          pc.createDataChannel("");
+          pc.onicecandidate = e => {
+            if (!e.candidate) {
+              pc.close();
+              resolve(Array.from(ips));
+              return;
+            }
+            const cand = e.candidate.candidate;
+            const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g;
+            const matches = cand.match(ipRegex);
+            if (matches) matches.forEach(ip => ips.add(ip));
+          };
+          pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(() => resolve([]));
+          setTimeout(() => {
+            try { pc.close(); } catch {}
+            resolve(Array.from(ips));
+          }, 2200);
+        } catch {
+          resolve([]);
+        }
+      });
+    }
+
+    // 7. 推断 OS 与浏览器
+    function parseOSAndBrowser() {
+      const ua = navigator.userAgent;
+      let os = "未知系统";
+      if (/Windows NT 10\.0/.test(ua)) os = "Windows 10 / 11";
+      else if (/Mac OS X ([0-9_]+)/.test(ua)) os = "macOS " + RegExp.$1.replace(/_/g, ".");
+      else if (/Android ([0-9.]+)/.test(ua)) os = "Android " + RegExp.$1;
+      else if (/iPhone|iPad|iPod/.test(ua)) os = "iOS / iPadOS";
+      else if (/Linux/.test(ua)) os = "Linux";
+
+      let browser = "未知浏览器";
+      if (/Edg\/([0-9.]+)/.test(ua)) browser = "Microsoft Edge " + RegExp.$1.split(".")[0];
+      else if (/OPR\/([0-9.]+)/.test(ua)) browser = "Opera " + RegExp.$1.split(".")[0];
+      else if (/Chrome\/([0-9.]+)/.test(ua)) browser = "Chrome " + RegExp.$1.split(".")[0];
+      else if (/Firefox\/([0-9.]+)/.test(ua)) browser = "Firefox " + RegExp.$1.split(".")[0];
+      else if (/Version\/([0-9.]+).*Safari/.test(ua)) browser = "Safari " + RegExp.$1.split(".")[0];
+
+      return { os, browser };
+    }
+
+    // 主执行流程
+    async function runAllSniffers() {
+      const t0 = performance.now();
+      renderSkeleton();
+
+      const { os, browser } = parseOSAndBrowser();
+      setRow("row-os", `${os} (${navigator.platform})`);
+      setRow("row-browser", browser);
+      setRow("row-ua", navigator.userAgent);
+
+      // Client Hints
+      let archInfo = "未暴露 (非 Chromium 或受限)";
+      if (navigator.userAgentData) {
+        const brands = navigator.userAgentData.brands.map(b => `${b.brand} v${b.version}`).join(", ");
+        setRow("row-ch-ua", brands || "无");
+        try {
+          const hi = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness", "platform", "platformVersion", "model"]);
+          archInfo = `${hi.architecture || "未知"} (${hi.bitness || "?"}-bit)`;
+          setRow("row-ch-plat", `${hi.platform} ${hi.platformVersion || ""} | ${archInfo}`);
+        } catch {
+          setRow("row-ch-plat", navigator.userAgentData.platform);
+        }
+      } else {
+        setRow("row-ch-ua", "当前浏览器不支持 Sec-CH-UA");
+        setRow("row-ch-plat", "当前浏览器不支持 User-Agent Client Hints");
+      }
+      setRow("row-arch", archInfo);
+
+      // DNT / Referrer
+      setRow("row-dnt", `DNT: ${navigator.doNotTrack || "未开启"} | GPC: ${navigator.globalPrivacyControl ? "已开启" : "未开启"}`);
+      setRow("row-ref", document.referrer || "直接访问 (无 Referrer)");
+
+      // 语言与时区
+      const langs = navigator.languages ? navigator.languages.join(", ") : navigator.language;
+      const intlOpts = Intl.DateTimeFormat().resolvedOptions();
+      const tzOffsetMin = -new Date().getTimezoneOffset();
+      const tzSign = tzOffsetMin >= 0 ? "+" : "-";
+      const tzHours = String(Math.floor(Math.abs(tzOffsetMin) / 60)).padStart(2, "0");
+      const tzMins = String(Math.abs(tzOffsetMin) % 60).padStart(2, "0");
+      const tzString = `${intlOpts.timeZone} (UTC${tzSign}${tzHours}:${tzMins})`;
+
+      setRow("row-lang", langs);
+      setRow("row-locale", `区域: ${intlOpts.locale} | 日历: ${intlOpts.calendar} | 数字系统: ${intlOpts.numberingSystem}`);
+      setRow("row-tz", tzString);
+      const sampleTime = new Intl.DateTimeFormat(intlOpts.locale, { hour: "numeric" }).resolvedOptions();
+      setRow("row-clock", sampleTime.hour12 ? "12 小时制" : "24 小时制");
+      setRow("row-numfmt", `${(1234567.89).toLocaleString()} | ${new Date().toLocaleDateString()}`);
+
+      // 语音合成列表
+      const fillVoices = () => {
+        const voices = window.speechSynthesis ? speechSynthesis.getVoices() : [];
+        setRow("row-voices", voices.length ? `共 ${voices.length} 种语音 (例如: ${voices.slice(0, 3).map(v => v.name).join(", ")})` : "0 种或等待加载");
+      };
+      fillVoices();
+      if (window.speechSynthesis) speechSynthesis.onvoiceschanged = fillVoices;
+
+      // 屏幕与硬件
+      const dpr = window.devicePixelRatio || 1;
+      const screenDesc = `${screen.width}×${screen.height} (DPR: ${dpr}x, 色深: ${screen.colorDepth}-bit)`;
+      setRow("row-screen", `物理分辨率: ${screenDesc} | 可用工作区: ${screen.availWidth}×${screen.availHeight}`);
+      setRow("row-multiscreen", screen.isExtended !== undefined ? (screen.isExtended ? "检测到多屏扩展" : "单显示器") : "API 未暴露");
+      setRow("row-cpu-mem", `${navigator.hardwareConcurrency || "?"} 逻辑线程 | 约 ${navigator.deviceMemory || "未暴露 (非 Chromium)"} GB 内存`);
+      setRow("row-touch", `${navigator.maxTouchPoints || 0} 点触控`);
+
+      // 主题与媒体查询
+      const isDark = matchMedia("(prefers-color-scheme: dark)").matches;
+      const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const isP3 = matchMedia("(color-gamut: p3)").matches;
+      const isHDR = matchMedia("(dynamic-range: high)").matches;
+      setRow("row-scheme", isDark ? "深色模式 (Dark)" : "浅色模式 (Light)");
+      setRow("row-motion", reducedMotion ? "开启减弱动画" : "标准动画 (未减弱)");
+      setRow("row-gamut", `色域: ${isP3 ? "Display P3 广色域" : "sRGB 标准色域"} | HDR: ${isHDR ? "支持" : "不支持"}`);
+      setRow("row-cookie-pdf", `Cookie: ${navigator.cookieEnabled ? "启用" : "禁用"} | 内置 PDF 预览: ${navigator.pdfViewerEnabled ? "启用" : "禁用"}`);
+      setRow("row-webdriver", navigator.webdriver ? "true (检测到自动化控制!)" : "false (正常人工浏览)");
+      setRow("row-history", `${history.length} 步历史记录`);
+
+      // 扩展痕迹检测
+      const extMarks = [];
+      if (window.ethereum) extMarks.push("Web3 加密钱包 (window.ethereum)");
+      if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) extMarks.push("React Developer Tools");
+      if (window.__VUE_DEVTOOLS_GLOBAL_HOOK__) extMarks.push("Vue DevTools");
+      if (document.querySelector("meta[name='darkreader']") || document.documentElement.hasAttribute("data-darkreader-Scheme")) extMarks.push("Dark Reader");
+      if (document.querySelector("[data-immersive-translate-effect]")) extMarks.push("沉浸式翻译");
+      setRow("row-ext", extMarks.length ? extMarks.join(", ") : "未检测到公开注入全局变量的特征扩展");
+
+      // 字体与职业推断
+      const fontRes = detectFontsAndWork();
+      setRow("row-fonts", `${fontRes.detectedList} → 推断: ${fontRes.workGuess}`);
+
+      // 异步并发硬件与指纹探测
+      const [fps, webgl, canvasFp, audioFp, webrtcIps] = await Promise.all([
+        estimateRefreshRate(),
+        getWebGLInfo(),
+        getCanvasFingerprint(),
+        getAudioFingerprint(),
+        detectWebRTC()
+      ]);
+
+      setRow("row-fps", `约 ${fps} Hz`);
+      setRow("row-gpu", `${webgl.renderer} (${webgl.vendor})`);
+      setRow("row-fp-canvas", canvasFp.hash);
+      setRow("row-fp-webgl", webgl.hash);
+      setRow("row-fp-audio", audioFp);
+      setRow("row-fp-random", canvasFp.randomized ? "检测到随机噪音注入 (防指纹浏览器/插件已生效)" : "稳定一致 (未开启画布指纹随机化，可被跨站追踪)");
+      setRow("row-webrtc", webrtcIps.length ? webrtcIps.join(", ") : "未暴露任何公网/局域网候选地址");
+
+      // WebGPU
+      if (navigator.gpu) {
+        try {
+          const adapter = await navigator.gpu.requestAdapter();
+          const info = adapter && adapter.info ? `${adapter.info.vendor || ""} ${adapter.info.architecture || ""}`.trim() : "已启用 WebGPU 适配器";
+          setRow("row-webgpu", info || "支持 WebGPU");
+        } catch {
+          setRow("row-webgpu", "支持但请求适配器受限");
+        }
+      } else {
+        setRow("row-webgpu", "不支持或已禁用");
+      }
+
+      // 电池、网络、音视频设备、存储配额
+      if (navigator.getBattery) {
+        try {
+          const bat = await navigator.getBattery();
+          setRow("row-battery", `${Math.round(bat.level * 100)}% (${bat.charging ? "充电中" : "使用电池"})`);
+        } catch {
+          setRow("row-battery", "无法读取");
+        }
+      } else {
+        setRow("row-battery", "浏览器已屏蔽 Battery API (防追踪保护)");
+      }
+
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      setRow("row-conn", conn ? `类型: ${conn.effectiveType || "?"} | 下行: ~${conn.downlink || "?"} Mbps | RTT: ${conn.rtt || "?"} ms` : "Network Information API 未暴露");
+
+      if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+        try {
+          const devs = await navigator.mediaDevices.enumerateDevices();
+          const cams = devs.filter(d => d.kind === "videoinput").length;
+          const mics = devs.filter(d => d.kind === "audioinput").length;
+          const spks = devs.filter(d => d.kind === "audiooutput").length;
+          setRow("row-media-dev", `摄像头: ${cams} 个 | 麦克风: ${mics} 个 | 音频输出: ${spks} 个`);
+        } catch {
+          setRow("row-media-dev", "枚举受限");
+        }
+      } else {
+        setRow("row-media-dev", "不支持枚举设备");
+      }
+
+      if (navigator.storage && navigator.storage.estimate) {
+        try {
+          const est = await navigator.storage.estimate();
+          const quotaGB = (est.quota / (1024 ** 3)).toFixed(1);
+          setRow("row-storage", `配额上限约 ${quotaGB} GB (已用 ${(est.usage / 1024).toFixed(1)} KB)`);
+        } catch {
+          setRow("row-storage", "无法估算");
+        }
+      }
+
+      // 导航协议耗时
+      const navEntry = performance.getEntriesByType("navigation")[0];
+      if (navEntry) {
+        setRow("row-proto", `协议: ${navEntry.nextHopProtocol || "未知"} | TCP/TLS 耗时: ${Math.round(navEntry.connectEnd - navEntry.connectStart)} ms`);
+      } else {
+        setRow("row-proto", location.protocol);
+      }
+
+      // 综合指纹计算与本地历史比对
+      const combinedRaw = [canvasFp.hash, webgl.hash, audioFp, fontRes.detectedList, screenDesc, intlOpts.timeZone, navigator.hardwareConcurrency].join("|");
+      const combinedFp = await sha256Short(combinedRaw);
+      setRow("row-fp-combined", combinedFp);
+
+      updateIdCard(combinedFp, canvasFp.randomized);
+
+      // 网络公网 IP 与多路出口探测 (带容错回退)
+      let ipData = {
+        ip: "本地/离线环境",
+        city: "未知城市",
+        country_name: "未知国家",
+        country_code: "",
+        timezone: intlOpts.timeZone,
+        asn: "",
+        org: "未知网络运营商",
+        latitude: "?",
+        longitude: "?"
+      };
+
+      try {
+        const res = await fetch("https://ipapi.co/json/", { cache: "no-store" });
+        if (res.ok) {
+          const j = await res.json();
+          ipData = {
+            ip: j.ip || ipData.ip,
+            city: `${j.city || "未知"}, ${j.region || ""}`,
+            country_name: j.country_name || "未知",
+            country_code: j.country_code || "",
+            timezone: j.timezone || intlOpts.timeZone,
+            asn: j.asn || "",
+            org: j.org || "未知 ISP",
+            latitude: j.latitude || "?",
+            longitude: j.longitude || "?"
+          };
+        }
+      } catch {
+        // 备用 Cloudflare Trace 解析
+        try {
+          const cfRes = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
+          const text = await cfRes.text();
+          const map = Object.fromEntries(text.trim().split("\n").map(line => line.split("=")));
+          ipData.ip = map.ip || ipData.ip;
+          ipData.country_code = map.loc || "";
+          ipData.country_name = map.loc || "未知";
+          setRow("row-exit-cf", `IP: ${map.ip} | 节点: ${map.colo} | 国家: ${map.loc} | TLS: ${map.tls}`);
+        } catch {
+          setRow("row-exit-cf", "网络受限或离线");
+        }
+      }
+
+      setRow("row-ip", ipData.ip);
+      setRow("row-ip-city", ipData.city);
+      setRow("row-ip-country", `${ipData.country_name} (${ipData.country_code || "?"})`);
+      setRow("row-ip-coord", `${ipData.latitude}, ${ipData.longitude}`);
+      setRow("row-asn", `${ipData.asn} ${ipData.org}`.trim());
+      setRow("row-ip-tz", ipData.timezone);
+
+      // IPv4 / IPv6 / DNS 异步补充
+      fetch("https://api4.ipify.org?format=json").then(r => r.json()).then(d => setRow("row-exit-v4", d.ip)).catch(() => setRow("row-exit-v4", "无 IPv4 或请求受限"));
+      fetch("https://api6.ipify.org?format=json").then(r => r.json()).then(d => setRow("row-exit-v6", d.ip)).catch(() => setRow("row-exit-v6", "无 IPv6 支持"));
+      fetch("https://www.cloudflare.com/cdn-cgi/trace").then(r => r.text()).then(t => {
+        const m = Object.fromEntries(t.trim().split("\n").map(l => l.split("=")));
+        setRow("row-exit-cf", `IP: ${m.ip} | 边缘机房: ${m.colo} | 地区: ${m.loc} | WARP: ${m.warp}`);
+      }).catch(() => {});
+
+      let dnsInfo = "未检测到异常";
+      try {
+        const dnsRes = await fetch("http://edns.ip-api.com/json");
+        const dj = await dnsRes.json();
+        if (dj && dj.dns) {
+          dnsInfo = `${dj.dns.ip} (${dj.dns.geo})`;
+        }
+      } catch {
+        dnsInfo = "HTTPS 页面默认拦截明文 EDNS 或被策略阻止 (安全)";
+      }
+      setRow("row-dns", dnsInfo);
+
+      // 填充顶部画像段落
+      const nationGuess = navigator.language.startsWith("zh") ? "中国 (或华语地区)" : `${navigator.language} 语言区`;
+      document.getElementById("p-nation").textContent = nationGuess;
+      document.getElementById("p-city").textContent = `${ipData.country_name} ${ipData.city}`;
+      document.getElementById("p-lang").textContent = navigator.language;
+      document.getElementById("p-tz").textContent = intlOpts.timeZone;
+      document.getElementById("p-os").textContent = os;
+      document.getElementById("p-browser").textContent = browser;
+      document.getElementById("p-screen").textContent = `${screen.width}×${screen.height} (${fps}Hz)`;
+      document.getElementById("p-gpu").textContent = webgl.renderer.replace(/ANGLE \((.+)\)/, "$1");
+      document.getElementById("p-net").textContent = `${ipData.ip} (${ipData.org})`;
+      document.getElementById("p-pref").textContent = isDark ? "深色模式" : "浅色模式";
+      document.getElementById("p-work").textContent = fontRes.workGuess;
+      document.getElementById("p-fp").textContent = combinedFp;
+
+      // 生成 9 项伪装检测
+      renderDisguiseChecks({
+        sysTz: intlOpts.timeZone,
+        ipTz: ipData.timezone,
+        lang: navigator.language,
+        ipCountry: ipData.country_code,
+        org: ipData.org,
+        webrtcIps,
+        httpIp: ipData.ip,
+        ua: navigator.userAgent,
+        platform: navigator.platform,
+        randomized: canvasFp.randomized,
+        webdriver: navigator.webdriver,
+        dnsInfo
+      });
+
+      const elapsed = Math.round(performance.now() - t0);
+      document.getElementById("scan-timer").textContent = `全量嗅探完成，共耗时 ${elapsed} ms`;
+    }
+
+    // 更新本地无 Cookie 追踪身份卡
+    function updateIdCard(currentFp, randomized) {
+      document.getElementById("id-current-fp").textContent = currentFp;
+      try {
+        const raw = localStorage.getItem("who_are_you_record");
+        const nowStr = new Date().toLocaleString();
+        if (!raw) {
+          localStorage.setItem("who_are_you_record", JSON.stringify({
+            fp: currentFp,
+            lastVisit: nowStr,
+            count: 1
+          }));
+          document.getElementById("id-last-visit").textContent = "首次访问本页 (已记录到本地)";
+          document.getElementById("id-visit-count").textContent = "1 次";
+          document.getElementById("id-fp-match").textContent = randomized ? "已开启随机指纹保护" : "基准指纹已建立";
+        } else {
+          const prev = JSON.parse(raw);
+          const count = (prev.count || 1) + 1;
+          const same = prev.fp === currentFp;
+          document.getElementById("id-last-visit").textContent = prev.lastVisit;
+          document.getElementById("id-visit-count").textContent = `${count} 次`;
+          document.getElementById("id-fp-match").textContent = same
+            ? "完全一致（即使清空 Cookie 也能认出是你）"
+            : `已变化 (旧: ${prev.fp})`;
+          localStorage.setItem("who_are_you_record", JSON.stringify({
+            fp: currentFp,
+            lastVisit: nowStr,
+            count
+          }));
+        }
+      } catch {
+        document.getElementById("id-last-visit").textContent = "本地存储已禁用 (隐私模式)";
+      }
+    }
+
+    // 渲染 9 项伪装检测
+    function renderDisguiseChecks(ctx) {
+      const tzMismatch = ctx.ipTz && ctx.sysTz !== ctx.ipTz;
+      const langCountryMismatch = ctx.ipCountry && !ctx.lang.toUpperCase().includes(ctx.ipCountry.toUpperCase()) && !(ctx.lang === "en-US" && ctx.ipCountry === "US");
+      const isDatacenter = /Cloudflare|Amazon|AWS|Google|Microsoft|Azure|DigitalOcean|Linode|Vultr|Choopa|Hetzner|OVH|Datacamp|Leaseweb|Alibaba|Tencent/i.test(ctx.org);
+      const webrtcLeak = ctx.webrtcIps.some(ip => !ip.startsWith("192.168.") && !ip.startsWith("10.") && ip !== ctx.httpIp);
+      const uaPlatformMismatch = (ctx.ua.includes("Windows") && /Mac|Linux/i.test(ctx.platform)) || (ctx.ua.includes("Macintosh") && /Win|Linux/i.test(ctx.platform));
+
+      const checks = [
+        {
+          title: "1. 系统时区 vs. IP 所在地时区",
+          status: tzMismatch ? "warn" : "ok",
+          badgeText: tzMismatch ? "时区不一致 (疑似代理)" : "一致",
+          detail: `系统时区: ${ctx.sysTz} | IP 时区: ${ctx.ipTz || "未知"}`,
+          fix: "修复建议：如果使用了海外代理节点并希望隐藏真实常驻地，请在指纹浏览器或系统设置中将时区同步为代理节点所在国家时区。"
+        },
+        {
+          title: "2. 浏览器首选语言 vs. IP 所属国家",
+          status: langCountryMismatch ? "warn" : "ok",
+          badgeText: langCountryMismatch ? "语言与地区不匹配" : "匹配",
+          detail: `浏览器语言: ${ctx.lang} | IP 国家代码: ${ctx.ipCountry || "未知"}`,
+          fix: "修复建议：中文浏览器挂海外 IP 访问站点是最常见的代理特征；如需深度伪装，可将 Accept-Language 与 navigator.language 调整为目标地区语言。"
+        },
+        {
+          title: "3. DNS 解析出口检测 (DNS Leak)",
+          status: "ok",
+          badgeText: "已检测",
+          detail: `当前解析状态: ${ctx.dnsInfo}`,
+          fix: "修复建议：在 Clash / Sing-box 等代理工具中开启 Fake-IP 模式或使用加密 DoH/DoT 远程解析，避免国内运营商 DNS 抢答暴露真实位置。"
+        },
+        {
+          title: "4. 分流路由特征 (Split Routing)",
+          status: (tzMismatch || langCountryMismatch) ? "warn" : "ok",
+          badgeText: (tzMismatch || langCountryMismatch) ? "疑似规则分流" : "单一路由",
+          detail: `直连特征 (${ctx.sysTz} / ${ctx.lang}) 与当前公网出口 (${ctx.ipCountry || "本地"}) 对比`,
+          fix: "修复建议：使用规则分流（Rule 模式）时，同时请求境内外接口的页面能立即发现你拥有两个不同国家的出口。高敏感场景建议开启全局（Global）或 TUN 严格路由。"
+        },
+        {
+          title: "5. WebRTC STUN 真实 IP 泄露",
+          status: webrtcLeak ? "bad" : "ok",
+          badgeText: webrtcLeak ? "发现额外 IP 暴露" : "未泄露",
+          detail: `STUN 候选地址: ${ctx.webrtcIps.length ? ctx.webrtcIps.join(", ") : "无暴露"}`,
+          fix: "修复建议：在代理客户端开启 TUN 虚拟网卡接管 UDP 流量，或在浏览器通过 WebRTC Control 扩展限制仅使用代理服务器。"
+        },
+        {
+          title: "6. 机房 / 数据中心网络识别 (Data Center ASN)",
+          status: isDatacenter ? "warn" : "ok",
+          badgeText: isDatacenter ? "机房/云服务商 IP" : "常规家庭/商业宽带",
+          detail: `当前网络运营商: ${ctx.org}`,
+          fix: "修复建议：云服务器与常见机场节点的 ASN 均在公开数据中心列表中，风控严格的网站会对其弹验证码；可使用原生家庭宽带住宅代理 (Residential IP) 规避。"
+        },
+        {
+          title: "7. User-Agent 与底层硬件平台一致性",
+          status: uaPlatformMismatch ? "bad" : "ok",
+          badgeText: uaPlatformMismatch ? "发现篡改破绽" : "自洽一致",
+          detail: `navigator.platform: ${ctx.platform} | UA 声明系统一致`,
+          fix: "修复建议：仅用简单插件修改 User-Agent 字符串会被 navigator.platform、Client Hints 和 WebGL 显卡渲染器瞬间识破，请保持真实 UA 或使用完整内核级防关联浏览器。"
+        },
+        {
+          title: "8. 指纹稳定性 vs. 随机噪音注入",
+          status: ctx.randomized ? "ok" : "warn",
+          badgeText: ctx.randomized ? "已开启防追踪随机化" : "指纹固定 (可被追踪)",
+          detail: ctx.randomized ? "连续两次 Canvas 渲染哈希不同，已阻止跨站画布追踪" : "画布与音频指纹恒定不变，无痕模式下依然可被识别",
+          fix: "修复建议：使用 Brave 浏览器、Firefox 严格隐私保护模式（启用 privacy.resistFingerprinting）或 Canvas Blocker 插件为画布注入微小随机噪点。"
+        },
+        {
+          title: "9. 自动化与爬虫控制特征 (Webdriver)",
+          status: ctx.webdriver ? "bad" : "ok",
+          badgeText: ctx.webdriver ? "检测到自动化程序" : "正常人类环境",
+          detail: `navigator.webdriver = ${Boolean(ctx.webdriver)}`,
+          fix: "修复建议：使用 Puppeteer / Playwright / Selenium 时需通过 stealth 插件抹除 navigator.webdriver 标志。"
+        }
+      ];
+
+      const container = document.getElementById("checks-container");
+      container.innerHTML = checks.map(c => `
+        <div class="check-row ${c.status !== 'ok' ? 'flagged' : ''}">
+          <div class="check-main">
+            <div class="check-title">
+              <span>${c.title}</span>
+              <span class="badge ${c.status}">${c.badgeText}</span>
+            </div>
+            <div class="check-detail">${c.detail}</div>
+          </div>
+          <div class="check-fix">${c.fix}</div>
+        </div>
+      `).join("");
+    }
+
+    // 交互绑定：悬停画像填空高亮下方表格对应行
+    document.querySelectorAll(".blank[data-target]").forEach(blank => {
+      const targets = blank.getAttribute("data-target").split(",");
+      blank.addEventListener("mouseenter", () => {
+        targets.forEach(id => {
+          const row = document.getElementById(id.trim());
+          if (row) row.classList.add("highlight");
+        });
+      });
+      blank.addEventListener("mouseleave", () => {
+        targets.forEach(id => {
+          const row = document.getElementById(id.trim());
+          if (row) row.classList.remove("highlight");
+        });
+      });
+      blank.addEventListener("click", () => {
+        const firstRow = document.getElementById(targets[0].trim());
+        if (firstRow) firstRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+
+    // 按钮绑定
+    document.getElementById("btn-blur").addEventListener("click", function () {
+      document.body.classList.toggle("blur-sensitive");
+      this.classList.toggle("active");
+    });
+
+    document.getElementById("btn-rerun").addEventListener("click", () => {
+      runAllSniffers();
+    });
+
+    // 启动嗅探
+    runAllSniffers();
+  </script>
+</body>
+</html>
